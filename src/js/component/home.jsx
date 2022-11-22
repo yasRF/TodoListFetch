@@ -1,69 +1,153 @@
-import React,{useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 
 const Home = () => {
-		const [newItem, setNewItem] = useState("");
-		const [items, setItems] = useState([]);
+  const [listaTareas, setListaTareas] = useState([]);
+  const [inputText, setInputText] = useState("");
 
-		//fetch
-		useEffect(() => {
-		  
-		  fetch("https://assets.breatheco.de/apis/fake/todos/user/alesanchezr")
-			.then(response => response.json())
-			.then(result => {
-				setNewItem(result)
-				console.log(result)})
-			.catch(error => console.log('error', error));
-			}, []);
-
-			/*/response
-			[
-    {
-        "label": "sample task",
-        "done": false
-    },
-    {
-        "label": "ggfgdgfd",
-        "id": "ebd0e30f-c5ac-4813-a69c-19aeed9b597e",
-        "done": false
-    },
-    {
-        "label": "fsdsf",
-        "id": "665aabab-1f17-435e-8c01-b54ffb0853dc",
-        "done": true
+  function eliminar(index) {
+    if (index > -1) {
+      const filterList = listaTareas.filter(
+        (item) => item !== listaTareas[index]
+      );
+      setListaTareas(filterList);
     }
-] /*/
-		function addItem() {
-		const item= {
-			id: Math.floor(Math.random() * 1000),
-			value: newItem
-		};
-		setItems(oldList => [...oldList, item]);
-		setNewItem("");
-	 }
-	 function deleteItem(id){
-		const newArray = items.filter(item => item.id !==id);
-		setItems(newArray);
-	
-	 };
+  }
 
-	return(
-		<div className="App">
-			<div className="text-center">
-			<h1>Lista de tareas</h1>
-			<input type="text" placeholder='Add an item...' value={newItem}
-			onChange={e => setNewItem(e.target.value)}
-			/>
-			<button onClick={() => addItem()}>Crear</button>
-			<ul>
-				{items.map(item => {
-					return(
-						<li key={item.id}>{item.value}<button onClick={() => deleteItem(item.id)}>Eliminar</button></li>
-					)
-				})}
-			</ul>
-		</div>
-		</div>
-	)
+  const creartodo = () => {
+    fetch("http://assets.breatheco.de/apis/fake/todos/user/yas07", {
+      method: "POST",
+      body: [],
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => {
+        console.log(resp.ok);
+
+        return resp.json();
+      })
+      .then((data) => {
+        setListaTareas(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const llamarTodo = () => {
+    fetch("http://assets.breatheco.de/apis/fake/todos/user/yas07", {
+      method: "GET",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => {
+        console.log(resp.ok);
+
+        return resp.json();
+      })
+      .then((data) => {
+        setListaTareas(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const cargarTodo = () => {
+    fetch("http://assets.breatheco.de/apis/fake/todos/user/yas07", {
+      method: "PUT",
+      body: JSON.stringify(listaTareas),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => {
+        return resp.json();
+      })
+      .then((data) => llamarTodo())
+
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const borrarTodo = () => {
+    fetch("http://assets.breatheco.de/apis/fake/todos/user/yas07", {
+      method: "DELETE",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => {
+        return resp.json();
+      })
+      .then((data) => llamarTodo())
+
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    llamarTodo();
+  }, []);
+
+  return (
+    <div className="text-center mt-5 container">
+      <h1>TAREAS</h1>
+      {}
+      <form
+        onSubmit={(evento) => {
+          evento.preventDefault();
+          if (inputText.label.length > 0)
+            setListaTareas([...listaTareas, inputText]);
+          setInputText({ label: "", done: false });
+        }}
+      >
+        <input
+          className="form-control form-control-lg my-3 elinput"
+          placeholder="Agrega tus tareas"
+          onChange={(evento) =>
+            setInputText({
+              label: evento.target.value,
+              done: false,
+            })
+          }
+         
+          value={inputText.label}
+        ></input>
+      </form>
+      <ul className="list-group row">
+        {listaTareas.map((item, index) => {
+          return (
+            <li className="list-group-item text-left elementos" key={index}>
+              <span>{item.label}</span>
+              <button
+                className="btn btn-danger eliminador float-right"
+                onClick={() => {
+                  eliminar(index);
+                }}
+              >
+                <span>x</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="pendientes">{listaTareas.length} pendiente/s</div>
+      <footer className="footerr">
+        <button className="" onClick={() => cargarTodo()}>
+          Cargar en API
+        </button>
+        <button className="" onClick={() => borrarTodo()}>
+          Eliminar to-do de la Api
+        </button>
+      </footer>
+    </div>
+  );
 };
 
 export default Home;
