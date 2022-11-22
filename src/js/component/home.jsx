@@ -98,7 +98,7 @@ const Home = () => {
   return (
     <div className="text-center mt-5 container">
       <h1>TAREAS</h1>
-      {}
+      
       <form
         onSubmit={(evento) => {
           evento.preventDefault();
